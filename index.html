@@ -1,0 +1,241 @@
+<html>
+<head>
+    <title>PA2: Neural Networks</title>
+</head>
+<style type="text/css">
+    #heading1
+    {
+        color: #888888;
+        font: bold 2.8em arial, sans-serif;
+    }
+    #heading2
+    {
+        color: #555555;
+        font: bold 1.4em arial, sans-serif;
+    }
+    #heading3
+    {
+        color: #222;
+        font: bold 1.4em verdana, sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+    #heading4
+    {
+        color: #222;
+        font: bold 1em verdana, sans-serif;
+    }
+    #container
+    {
+        text-align: justify;
+        width: 75%;
+        margin: 0 auto;
+        padding: 1em 2em;
+        background: #FFFFFF;
+        font: .8em "trebuchet ms" , arial, sans-serif;
+    }
+    table
+    {
+        font: 1em "trebuchet ms" , arial, sans-serif;
+    }
+    table th
+    {
+        color: #222;
+        text-align: left;
+        font: bold .9em "trebuchet ms" , arial, sans-serif;
+    }
+    #container p
+    {
+        font-family: Verdana, Geneva, sans-serif;
+    }
+    #container pre
+    {
+        font-family: Verdana, Geneva, sans-serif;
+        font-size: 12px;
+    }
+    .imagemomentstext
+    {
+        font-family: Verdana, Geneva, sans-serif;
+    }
+</style>
+</head>
+<body bgcolor="#222222">
+    <div id="container">
+        <div id="heading1">CAS CS440/640 Artificial Intelligence Spring 2015</div>
+        <div id="heading2"><br>Programming Assignment 2: Neural Networks</div><br>
+        
+        <div id="heading2">Marika Lee, Jungwoon Shin, and Masaya Ando</div><br>
+        <div id="heading2">February 25, 2015</div>
+
+        <br><br>
+
+        <div id="heading3">Problem Definition</div>
+        <p>
+            The goal of this assignment is to implement an algorithm that trains a neural network and practice how to choose various kinds of parameters to achieve good performance of the network. In particular,
+            <ul> 
+                <li> Implement the "back propogation algorithm" </li>
+                <li> Experiment with the structure of the neural network (number of nodes and number of hidden layers)</li>
+                <li> Try to find a general rule of thumb in determing the number of nodes in a layer and how many hidden layers are ideal? </li>
+                <li> Test how many rounds of training are needed </li>
+                <li> Run both mutilclass output data and two output data sets. </li>
+            </ul>
+        </p>
+
+
+        <div id="heading3">Implementation</div>
+        <p>
+            We used Java for this project and used Eclipse as our primary IDE. Given the skeleton code of a neural network, we implemented an algorithm which trains the network, which involves calculating parameters such as thresholds, weights, and learning rates to create an efficient algorithm that trains the data well. In order to train the neural network, it was necessary for us to implement the back propagation algorithm, alter initial weights and thresholds, and lastly approximate how many rounds of training were necessary to decrease the error rates. Also, we needed our algorithm to work on three types of input data.
+        </p>
+
+
+        <br>
+
+
+        <div id="heading3">Methods</div>
+        <div id="heading4">Preprocessing of Input Data</div>
+        <p>
+            This is the first step. The 3 sets of raw data needs to be preprocessed otherwise the neural network will not produce hypothesized output data. Preprocessing of the network inputs and targets improves the efficiency of a neural network training. Normalization scales each input data columns so that a single feature doesn't have a distored effect on the output. This process balances the power of each input features. 
+        </p>
+
+        <div id="heading4"> Choosing the number of Nodes in a Layer and Setting different learning rates </div>
+        <p>
+            The range in which optimal number of nodes in a single layer and number of layers in the network varied depending on each data sets. And this was only available by trying out every different data sets.
+            <br>
+            The parameters and input data are processed from input files from Credit, Lenses and BUBIL data. To find the optimal learning rate, a guess and check method was used for each separate data set. Starting from a predicted learning rate value (ex. learning rate of 1), from there the error rates were compared when different learning rate values were inputted into the algorithm. 
+        </p>
+
+        <div id="heading4">Changing the initial weight sizes</div>
+        <p>
+            It might seem natural to expect that initial weight conditions do not matter because the algorithm is supposed to correct the weight sizes. However, we have found that backpropagation is extremely sensitive to weight sizes as noted by John F. Kolen Jordan B. Pollack (AI Researchers at OSU). At first, our initial sizes were random distribution from 0 to 1. However, changing this to 0 to 0.5 siginificantly improved the error rates for all data sets and layer and layer node sizes. From engineering perspective, this suggests that different weight sizes need to attempted for all different layer sizes and layer node sizes.
+            <br>
+            Credit Testing data set error rate improved from 0.31 to 0.22.
+            Lense Testing data set error rate improved from 0.33 to 0.16.
+            BUBIL data set improved from 0.6 to 0.4
+        </p>
+
+        <div id="heading4">Back Propagation Algorithm Implementation</div>
+        <p>
+            <br><br><img src="images/backprop.JPG" height="auto" width="60%"><br><br>
+            The overall purpose of using a back propagation algorithm is so that the we can loop through all the nodes in every layer of the neural network (written in detail below). As we loop through the nodes, we calculate and store a &beta;<sub>j</sub> value for each node, which is the sum of all the weights of every connection multiplied by the outputs of the path. Once the algorithm is in its final phase (last layer of the neural network), we find &beta;<sub>z</sub>, which is the difference between the target and calculated outputs for each node in the last layer. Once &beta;<sub>j</sub> and &beta;<sub>z</sub> (Beta values) are calculated for each node in the network, the algorithm once again loops through every node and re-weights each node based on the Beta values and the passed learning rate. Once that's done, the parameters and input data are processed from an input file of training data for Credit, Lenses and BUBIL data. 
+        </p>
+        <p>
+            In the case of our algorithm, we implemented a function called train() in the NeuralNet.java file, which served a purpose of creating the optimally-weighted neural net for the training data using the back propagation algorithm explained above. Within our code, we determined the error rates to calculate the necessary weight changes for the nodes. So using the back propagation algorithm, with every pass through the data, the weight is automatically adjusted according to the error that was previously calculated. The purpose of this is to minimize the error rates over the course of many passes through the entire training data.
+        </p>
+
+        <div id="heading4">Calculating Beta</div>
+        <p>
+            Here is a more in depth explanation of the weight calculation in the back propagation algorithm mentioned above. As seen in our train() code in NeuralNet.java, as we iterate through the all input nodes in the neural network, we calculate Beta for output nodes, "hidden layer" nodes, and lastly compute the weight changes for all weights in the current layer. 
+            <br><br>
+            First we calculate the beta for the output nodes using delta of target node and the parameter rate. 
+            <br><br><img src="images/beta_output.JPG" height="auto" width="60%"><br><br>
+            Next we calculate the Beta for the "hidden layer" nodes, in which we implement this formula: <br>
+            &beta;<sub>A</sub> = For all output connections<sub>(A to i)</sub>, &Sigma; (weight * output<sub>i</sub> * (1 - out<sub>i</sub>) * &beta;<sub>i</sub>)
+
+            <br><br><img src="images/beta_hidden.JPG" height="auto" width="70%"><br><br>
+            Lastly, we compute the weight changes for all the weights in the current layer by comparing the prior weights to the current weights of the neural network.
+    
+            <br><br><img src="images/weight.JPG" height="auto" width="60%"><br><br>
+        </p>
+        <br>
+
+        <div id="heading3">Code</div>
+        <p>
+            <table width="100%">
+                <tr>
+                    <th>File Name</th>
+                    <th>File Description</th>
+                </tr>
+                <tr>
+                    <td><a href="src/Connection.java">Connection.java</a></td>
+                    <td>Connection between nodes.</td>
+                </tr>
+                 <tr>
+                    <td><a href="src/DataProcessor.java">DataProcessor.java</a></td>
+                    <td>Raw data processing.</td>
+                </tr>
+                 <tr>
+                    <td><a href="src/NeuralNet.java">NeuralNet.java</a></td>
+                    <td>Neural networks.</td>
+                </tr>
+                <tr>
+                    <td><a href="src/NeuralNetLearner.java">NeuralNetLearner.java</a></td>
+                    <td>Testing file and implementation of the neural network.</td>
+                </tr>
+                <tr>
+                    <td><a href="src/Node.java">Node.java</a></td>
+                    <td>Node in the networks.</td>
+                </tr>
+            </table>
+        </p>
+
+
+        <br>
+
+
+        <div id="heading3">Analysis of Results</div>
+        <p>
+            <br>
+            For the credit neural network, we achieved an error rate of around 2% on every test. The testing error rate for this network was around 21%.<br><br>
+            For the lenses neural network, we achieved an error rate of 0% on every test. The testing error rate for this network was around 16%.<br><br>
+            For the BUBIL neural network, we achieved an error rate of around 0%. The testing error rate for this network is around 40%.
+        </p>
+
+
+        <br>
+   <div id="heading3">Discussion</div>
+        <p>
+            (1) One Strength of this method is that it has low error rate for data set with equal importance level of different inputs. This why normalizations makes this algorithm work better. Because each data input columns are scaled similarly due to normalization, the algorithm can converge quickly. With good data where all feature columns of input are important, backpropagation algorithm will work well.
+    <br><br>
+            (2) Normalizing input data assumes that all feature input data are equally important with similar impact on the output data.
+            This assumes that both the input data quality are very high meaning that input data with useless features are not included in the data.
+            Potential work for this is how you can process the data so as to select only the features of input data that are relevant to output result. Model Selection algorithm select features does this.
+<br><br>
+            (3) Although this algorithm is expected to change the weight sizes so as to reduce error rates, having different initial weight condition have significant impact on the accuaracy of the algorithm. This was quite unintuitive. One implication from this result is that different weight sizes needs to be tried for a single data set. 
+<br><br>
+            (4) As expected, changing number of layers and the number of nodes in each layers significantly changes the accuracy of the algorithm. However, coming up with a general rule of thumb in how to determine these sizes were undiscovered. When trying from 1 to 30 different layer sizes and 1-20 different number of nodes within a layer, there was no general rule. However, each data set seem to have some general range that works well. It is therefore important run these algorithms considering each data set as a unique characteristics.
+<br><br>
+            (5) Learning rates determines the size by how much you want to change the weight sizes. It is important to set this rate not too large because it will never converge or not to low because algorithm will run too slow.
+
+
+        </p>    
+
+
+        <br>
+
+
+        <div id="heading3">Conclusion</div>
+        <p>
+            The accuracy of this algorithm depends on many different factors.<br> (1) initial weight conditions <br>(2) input data feature scales<br> (3) quality of each feature in the input data <br>(4) number of layers in the network <br>(5) number of nodes in a layer<br> (6) the nature of each data sets.
+         <br><br>
+            The idea of changing weight based on the standard whether it will reduce the error rate seems like a very reasonable approach. 
+            This algorithm works only on certain ranges of condition. And it is therefore important to use it after all different parameter values are tested using all five different standard above.
+        <br><br>
+            One very strange obervation point was that no matter what parameters I use(literally tried 1600 different cases of layer size and learning rates), it was never possible to get better than 0.4 for testing data set error rate. Our guess is that data quality might play a role here.
+
+        </p>
+
+
+        <br>
+
+
+        <div id="heading3">Sources</div>
+        <p>
+            <ul>
+
+                <li>"Artificial Intelligence 3rd Edition" by Patrick Henry Winston. May 10, 1992 </li><br>
+
+                <li>PA2 Template Code by Zhiqiang Ren</li>
+                <dl><a href="http://www.cs.bu.edu/fac/betke/cs440/restricted/p2/">http://www.cs.bu.edu/fac/betke/cs440/restricted/p2/</a></dl><br>
+
+                <li>"Neural Network Training and Back Propagation" by Shyamns </li>
+                <dl><a href="http://cs-people.bu.edu/shyamns/CS440/p2/">http://cs-people.bu.edu/shyamns/</a></dl><br>
+
+                <li>"Neural Nets" by Tim Duffy (GitHub: TimDuffy)</li>
+                <dl><a href="https://github.com/TimDuffy/Boston-University-Projects/tree/master/CS440%20-%20Artificial%20Intellegence/p2-Neural%20Nets">https://github.com/TimDuffy/</a></dl><br>
+
+
+            </ul>
+        </p>
+    </div>
+</body>
+</html>
